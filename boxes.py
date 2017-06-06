@@ -104,28 +104,22 @@ class BoxesGame():
 		self.screen.blit(scoreother, (340, 435))
 
 	def checkCloseSquare(self, xpos, ypos, isHorizontal, isUser):
-		print("checkCloseSquare xpos = ",xpos, " , ypos = ", ypos)
+		# print("checkCloseSquare xpos = ",xpos, " , ypos = ", ypos)
 		"""print(self.boardv)
 		print(self.boardh)
 		print(self.boardh[ypos][xpos])
 		print(self.boardh[ypos+1][xpos])
 		print(self.boardh[ypos-1][xpos])"""
 
-		print(isHorizontal)
-
 		if isHorizontal:
 			if self.boardh[ypos][xpos] == True and self.boardh[ypos + 1][xpos] == True and self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True:
-				print("ici")
 				self.fillSquare(xpos, ypos, isUser)
 			if self.boardh[ypos][xpos] == True and self.boardh[ypos - 1][xpos] == True and self.boardv[ypos-1][xpos] == True and self.boardv[ypos-1][xpos+1] == True:
-				print("ici2")
 				self.fillSquare(xpos, ypos-1, isUser)
 		else:
 			if self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True and self.boardh[ypos][xpos] == True and self.boardh[ypos][xpos] and self.boardh[ypos+1][xpos]:
-				print("ici")
 				self.fillSquare(xpos, ypos, isUser)
 			if self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos-1] == True and self.boardh[ypos][xpos-1] == True and self.boardh[ypos+1][xpos-1]:
-				print("ici2")
 				self.fillSquare(xpos-1, ypos, isUser)
 
 
@@ -133,8 +127,10 @@ class BoxesGame():
 	def fillSquare(self, xpos, ypos, isUser):
 		if isUser:
 			self.owner[xpos][ypos] = "win"
+			self.me += 1
 		else:
 			self.owner[xpos][ypos] = "lose"
+			self.ia += 1
 
 	def update(self):
 		#sleep to make the game 60 fps
