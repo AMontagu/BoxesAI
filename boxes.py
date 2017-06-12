@@ -1,13 +1,31 @@
 import pygame
 import math
 
-class BoxesGame():
+from randomSolver import RandomSolver
+from reflexSolver import ReflexSolver
+
+"""class Boxe():
 	def __init__(self):
+		self.up = False
+		self.right = False
+		self.down = False
+		self.left = False
+		
+	def isFull(self):
+		return self.up and self.right and self.down and self.left
+		 
+	
+	def getAvailable(self):
+		available = list()
+		return available"""
+
+
+class BoxesGame():
+	def __init__(self, ia):
 		pass
 		#1
 		pygame.init()
 		pygame.font.init()
-
 
 		self.lineSize = 6
 		self.columnSize = 8
@@ -27,11 +45,23 @@ class BoxesGame():
 		self.boardh = [[False for x in range(self.columnSize)] for y in range(self.lineSize+1)]
 		self.boardv = [[False for x in range(self.columnSize+1)] for y in range(self.lineSize)]
 		self.initGraphics()
-		self.turn = True
-		self.me=0
+		self.userTurn = True
+		self.user=0
 		self.ia=0
 		self.userWin=False
-		self.owner = [[0 for x in range(self.lineSize)] for y in range(self.columnSize)]
+		self.owner = [[0 for x in range(self.columnSize)] for y in range(self.lineSize)]
+
+		if ia == "random":
+			self.solver = RandomSolver(self.columnSize, self.lineSize)
+
+		elif ia == "reflex":
+			self.solver = ReflexSolver(self.columnSize, self.lineSize)
+
+		elif ia == "minmax":
+			pass
+
+		elif ia == "learning":
+			pass
 
 	def initGraphics(self):
 		self.normallinev=pygame.image.load("images/normalline.png")
@@ -52,6 +82,7 @@ class BoxesGame():
 	def drawBoard(self):
 		for x in range(self.columnSize):
 			for y in range(self.lineSize+1):
+				#print("board[" + str(y) + "][" + str(x) + "]")
 				if not self.boardh[y][x]:
 					self.screen.blit(self.normallineh, [(x)*self.squareSize+self.separatorSize, (y)*self.squareSize])
 				else:
@@ -70,10 +101,10 @@ class BoxesGame():
 	def drawOwnermap(self):
 		for x in range(self.columnSize):
 			for y in range(self.lineSize):
-				if self.owner[x][y]!=0:
-					if self.owner[x][y]=="win":
+				if self.owner[y][x]!=0:
+					if self.owner[y][x]=="win":
 						self.screen.blit(self.blueplayer, (x*self.squareSize+self.separatorSize, y*self.squareSize+self.separatorSize))
-					if self.owner[x][y]=="lose":
+					if self.owner[y][x]=="lose":
 						self.screen.blit(self.greenplayer, (x*self.squareSize+self.separatorSize, y*self.squareSize+self.separatorSize))
 
 	def drawHUD(self):
@@ -93,7 +124,7 @@ class BoxesGame():
 		myfont64 = pygame.font.SysFont(None, 64)
 		myfont20 = pygame.font.SysFont(None, 20)
 
-		scoreme = myfont64.render(str(self.me), 1, (255,255,255))
+		scoreme = myfont64.render(str(self.user), 1, (255,255,255))
 		scoreother = myfont64.render(str(self.ia), 1, (255,255,255))
 		scoretextme = myfont20.render("You", 1, (255,255,255))
 		scoretextother = myfont20.render("IA", 1, (255,255,255))
@@ -103,8 +134,8 @@ class BoxesGame():
 		self.screen.blit(scoretextother, (280, self.height - 60))
 		self.screen.blit(scoreother, (340, self.height - 50))
 
-	def checkCloseSquare(self, xpos, ypos, isHorizontal, isUser):
-		print("checkCloseSquare xpos = ",xpos, " , ypos = ", ypos)
+	def checkCloseSquare(self, xpos, ypos, isHorizontal):
+		# print("checkCloseSquare xpos = ",xpos, " , ypos = ", ypos)
 		"""print(self.boardv)
 		print(self.boardh)
 		print(self.boardh[ypos][xpos])
@@ -114,39 +145,41 @@ class BoxesGame():
 		if isHorizontal:
 			if ypos < self.lineSize and xpos < self.columnSize:
 				if self.boardh[ypos][xpos] == True and self.boardh[ypos + 1][xpos] == True and self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True:
-					self.fillSquare(xpos, ypos, isUser)
+					self.fillSquare(xpos, ypos, self.userTurn)
 			else:
 				print("ici")
 
 			if ypos > 0 and xpos < self.columnSize:
 				if self.boardh[ypos][xpos] == True and self.boardh[ypos - 1][xpos] == True and self.boardv[ypos-1][xpos] == True and self.boardv[ypos-1][xpos+1] == True:
-					self.fillSquare(xpos, ypos-1, isUser)
+					self.fillSquare(xpos, ypos-1, self.userTurn)
 			else:
 				print("ici2")
 		else:
 			if ypos < self.lineSize and xpos < self.columnSize:
-				if self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True and self.boardh[ypos][xpos] == True and self.boardh[ypos][xpos] and self.boardh[ypos+1][xpos]:
-					self.fillSquare(xpos, ypos, isUser)
+				if self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True and self.boardh[ypos][xpos] == True and self.boardh[ypos+1][xpos]:
+					self.fillSquare(xpos, ypos, self.userTurn)
 
 			if ypos < self.lineSize and xpos > 0:
 				if self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos-1] == True and self.boardh[ypos][xpos-1] == True and self.boardh[ypos+1][xpos-1]:
-					self.fillSquare(xpos-1, ypos, isUser)
+					self.fillSquare(xpos-1, ypos, self.userTurn)
 
 
 
 	def fillSquare(self, xpos, ypos, isUser):
+		#print("fill ", xpos, ypos)
+		#print(self.owner)
 		if isUser:
-			self.owner[xpos][ypos] = "win"
-			self.me += 1
+			self.owner[ypos][xpos] = "win"
+			self.user += 1
 		else:
-			self.owner[xpos][ypos] = "lose"
+			self.owner[ypos][xpos] = "lose"
 			self.ia += 1
 
 	def update(self):
 		#sleep to make the game 60 fps
 
-		if self.me + self.ia == self.lineSize * self.columnSize:
-			self.userWin = True if self.me > self.ia else False
+		if self.user + self.ia == self.lineSize * self.columnSize:
+			self.userWin = True if self.user > self.ia else False
 			return 1
 
 		self.clock.tick(60)
@@ -216,10 +249,44 @@ class BoxesGame():
 				else:
 					self.boardv[ypos][xpos]=True
 
-				self.checkCloseSquare(xpos, ypos, is_horizontal, True)
+				self.checkCloseSquare(xpos, ypos, is_horizontal)
+
+				if self.user + self.ia == self.lineSize * self.columnSize:
+					self.userWin = True if self.user > self.ia else False
+					# clear the screen
+					self.screen.fill(0)
+					# draw the board
+					self.drawBoard()
+					self.drawHUD()
+					self.drawOwnermap()
+					pygame.display.flip()
+					return 1
+
+				if self.userTurn:
+					self.userTurn = False
+					self.iaPlay()
+					self.userTurn = True
 
 		#update the screen
 		pygame.display.flip()
+
+
+	def iaPlay(self):
+		isHorizontal, ypos, xpos = self.solver.play(self.boardh, self.boardv, self.owner)
+
+		#print(isHorizontal, ypos, xpos)
+
+		#print(self.boardh)
+
+		if isHorizontal:
+			self.boardh[ypos][xpos] = True
+		else:
+			self.boardv[ypos][xpos] = True
+
+		self.checkCloseSquare(xpos, ypos, isHorizontal)
+
+		pass
+
 
 	def finished(self):
 		self.screen.blit(self.gameover if not self.userWin else self.winningscreen, (0,0))
@@ -230,7 +297,9 @@ class BoxesGame():
 			pygame.display.flip()
 
 if __name__ == "__main__":
-	bg=BoxesGame() #__init__ is called right here
+	# ia = "random"
+	ia = "reflex"
+	bg=BoxesGame(ia) #__init__ is called right here
 	while 1:
 		if bg.update() == 1:
 			break
