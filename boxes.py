@@ -3,6 +3,7 @@ import math
 
 import sys
 
+from learningSolver import LearningSolver
 from minMaxSolver import MinMaxSolver
 from randomSolver import RandomSolver
 from reflexSolver import ReflexSolver
@@ -30,8 +31,8 @@ class BoxesGame():
 		pygame.init()
 		pygame.font.init()
 
-		self.lineSize = 3
-		self.columnSize = 3
+		self.lineSize = 4
+		self.columnSize = 4
 
 		self.squareSize = 64
 		self.separatorSize = 5
@@ -66,7 +67,7 @@ class BoxesGame():
 			self.solver = MinMaxSolver(self.columnSize, self.lineSize)
 
 		elif ia == "learning":
-			pass
+			self.solver = LearningSolver(self.columnSize, self.lineSize)
 
 	def initGraphics(self):
 		self.normallinev=pygame.image.load("images/normalline.png")
@@ -320,7 +321,8 @@ if __name__ == "__main__":
 
 	#ia = "random"
 	#ia = "reflex"
-	ia = "minmax"
+	#ia = "minmax"
+	ia = "learning"
 	bg=BoxesGame(ia) #__init__ is called right here
 	while 1:
 		if bg.update() == 1:

@@ -1,6 +1,5 @@
 import copy
-
-import time
+import random
 
 from reflexSolver import ReflexSolver
 
@@ -113,6 +112,8 @@ class MinMaxSolver(ReflexSolver):
 			availableHit.append((available[0], available[1], True))
 		for available in availableV:
 			availableHit.append((available[0], available[1], False))
+
+		random.shuffle(availableHit)
 
 		try:
 			for available in availableHit:
