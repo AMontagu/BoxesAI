@@ -22,26 +22,22 @@ class ReflexSolver(RandomSolver):
 		#print(availableH)
 		#print(availableV)
 
-		result = self.checkPoint(0, 0)
-
-		print(result)
-
-		return result
+		return self.checkPoint(0, 0)
 
 
 	def checkPoint(self, xpos, ypos):
 
-		if self.checkBoxUp(xpos, ypos) or self.checkBoxDown(xpos, ypos):
-			return self.getLastPositionBoxUp(xpos, ypos)
+		if self.checkBoxUp(xpos, ypos, self.boardh, self.boardv):
+			return self.getLastPositionBoxUp(xpos, ypos, self.boardh, self.boardv)
 
-		if self.checkBoxDown(xpos, ypos):
-			return self.getLastPositionBoxDown(xpos, ypos)
+		if self.checkBoxDown(xpos, ypos, self.boardh, self.boardv):
+			return self.getLastPositionBoxDown(xpos, ypos, self.boardh, self.boardv)
 
-		elif self.checkBoxRight(xpos, ypos):
-			return self.getLastPositionBoxRight(xpos, ypos)
+		elif self.checkBoxRight(xpos, ypos, self.boardh, self.boardv):
+			return self.getLastPositionBoxRight(xpos, ypos, self.boardh, self.boardv)
 
-		elif self.checkBoxRight(xpos, ypos):
-			return self.getLastPositionBoxLeft(xpos, ypos)
+		elif self.checkBoxRight(xpos, ypos, self.boardh, self.boardv):
+			return self.getLastPositionBoxLeft(xpos, ypos, self.boardh, self.boardv)
 
 		else:
 			if xpos < self.columnSize:
@@ -51,73 +47,73 @@ class ReflexSolver(RandomSolver):
 			else:
 				return super().play(self.boardh, self.boardv, self.owner)
 
-	def checkBoxUp(self, xpos, ypos):
+	def checkBoxUp(self, xpos, ypos, boardh, boardv):
 		if ypos < self.lineSize and xpos < self.columnSize:
-			return [self.boardh[ypos][xpos], self.boardh[ypos + 1][xpos], self.boardv[ypos][xpos], self.boardv[ypos][xpos + 1]].count(True) == 3
+			return [boardh[ypos][xpos], boardh[ypos + 1][xpos], boardv[ypos][xpos], boardv[ypos][xpos + 1]].count(True) == 3
 		else:
 			return False
 
-	def getLastPositionBoxUp(self, xpos, ypos):
-		if not self.boardh[ypos][xpos]:
+	def getLastPositionBoxUp(self, xpos, ypos, boardh, boardv):
+		if not boardh[ypos][xpos]:
 			return True, ypos, xpos
-		elif not self.boardh[ypos + 1][xpos]:
+		elif not boardh[ypos + 1][xpos]:
 			return True, ypos+1, xpos
-		elif not self.boardv[ypos][xpos]:
+		elif not boardv[ypos][xpos]:
 			return False, ypos, xpos
-		elif not self.boardv[ypos][xpos + 1]:
+		elif not boardv[ypos][xpos + 1]:
 			return False, ypos, xpos+1
 		else:
 			print("ERROR")
 
-	def checkBoxDown(self, xpos, ypos):
+	def checkBoxDown(self, xpos, ypos, boardh, boardv):
 		if ypos > 0 and xpos < self.columnSize:
-			return [self.boardh[ypos][xpos], self.boardh[ypos - 1][xpos], self.boardv[ypos-1][xpos], self.boardv[ypos-1][xpos+1]].count(True) == 3
+			return [boardh[ypos][xpos], boardh[ypos - 1][xpos], boardv[ypos-1][xpos], boardv[ypos-1][xpos+1]].count(True) == 3
 		else:
 			return False
 
-	def getLastPositionBoxDown(self, xpos, ypos):
-		if not self.boardh[ypos][xpos]:
+	def getLastPositionBoxDown(self, xpos, ypos, boardh, boardv):
+		if not boardh[ypos][xpos]:
 			return True, ypos, xpos
-		elif not self.boardh[ypos - 1][xpos]:
+		elif not boardh[ypos - 1][xpos]:
 			return True, ypos-1, xpos
-		elif not self.boardv[ypos-1][xpos]:
+		elif not boardv[ypos-1][xpos]:
 			return False, ypos-1, xpos
-		elif not self.boardv[ypos-1][xpos + 1]:
+		elif not boardv[ypos-1][xpos + 1]:
 			return False, ypos-1, xpos+1
 		else:
 			print("ERROR")
 
-	def checkBoxRight(self, xpos, ypos):
+	def checkBoxRight(self, xpos, ypos, boardh, boardv):
 		if ypos < self.lineSize and xpos < self.columnSize:
-			return [self.boardv[ypos][xpos], self.boardv[ypos][xpos+1], self.boardh[ypos][xpos], self.boardh[ypos+1][xpos]].count(True) == 3
+			return [boardv[ypos][xpos], boardv[ypos][xpos+1], boardh[ypos][xpos], boardh[ypos+1][xpos]].count(True) == 3
 		return False
 
-	def getLastPositionBoxRight(self, xpos, ypos):
-		if not self.boardh[ypos][xpos]:
+	def getLastPositionBoxRight(self, xpos, ypos, boardh, boardv):
+		if not boardh[ypos][xpos]:
 			return True, ypos, xpos
-		elif not self.boardh[ypos+1][xpos]:
+		elif not boardh[ypos+1][xpos]:
 			return True, ypos+1, xpos
-		elif not self.boardv[ypos][xpos]:
+		elif not boardv[ypos][xpos]:
 			return False, ypos, xpos
-		elif not self.boardv[ypos][xpos + 1]:
+		elif not boardv[ypos][xpos + 1]:
 			return False, ypos, xpos+1
 		else:
 			print("ERROR")
 
-	def checkBoxLeft(self, xpos, ypos):
+	def checkBoxLeft(self, xpos, ypos, boardh, boardv):
 		if ypos < self.lineSize and xpos > 0:
-			return [self.boardv[ypos][xpos], self.boardv[ypos][xpos - 1], self.boardh[ypos][xpos - 1], self.boardh[ypos + 1][xpos - 1]].count(True) == 3
+			return [boardv[ypos][xpos], boardv[ypos][xpos - 1], boardh[ypos][xpos - 1], boardh[ypos + 1][xpos - 1]].count(True) == 3
 		else:
 			return False
 
-	def getLastPositionBoxLeft(self, xpos, ypos):
-		if not self.boardh[ypos][xpos-1]:
+	def getLastPositionBoxLeft(self, xpos, ypos, boardh, boardv):
+		if not boardh[ypos][xpos-1]:
 			return True, ypos, xpos-1
-		elif not self.boardh[ypos+1][xpos-1]:
+		elif not boardh[ypos+1][xpos-1]:
 			return True, ypos+1, xpos-1
-		elif not self.boardv[ypos][xpos]:
+		elif not boardv[ypos][xpos]:
 			return False, ypos, xpos
-		elif not self.boardv[ypos][xpos-1]:
+		elif not boardv[ypos][xpos-1]:
 			return False, ypos, xpos-1
 		else:
 			print("ERROR")

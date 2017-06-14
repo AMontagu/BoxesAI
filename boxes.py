@@ -1,6 +1,9 @@
 import pygame
 import math
 
+import sys
+
+from minMaxSolver import MinMaxSolver
 from randomSolver import RandomSolver
 from reflexSolver import ReflexSolver
 
@@ -27,8 +30,8 @@ class BoxesGame():
 		pygame.init()
 		pygame.font.init()
 
-		self.lineSize = 6
-		self.columnSize = 8
+		self.lineSize = 2
+		self.columnSize = 2
 
 		self.squareSize = 64
 		self.separatorSize = 5
@@ -58,7 +61,7 @@ class BoxesGame():
 			self.solver = ReflexSolver(self.columnSize, self.lineSize)
 
 		elif ia == "minmax":
-			pass
+			self.solver = MinMaxSolver(self.columnSize, self.lineSize)
 
 		elif ia == "learning":
 			pass
@@ -146,14 +149,10 @@ class BoxesGame():
 			if ypos < self.lineSize and xpos < self.columnSize:
 				if self.boardh[ypos][xpos] == True and self.boardh[ypos + 1][xpos] == True and self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True:
 					self.fillSquare(xpos, ypos, self.userTurn)
-			else:
-				print("ici")
 
 			if ypos > 0 and xpos < self.columnSize:
 				if self.boardh[ypos][xpos] == True and self.boardh[ypos - 1][xpos] == True and self.boardv[ypos-1][xpos] == True and self.boardv[ypos-1][xpos+1] == True:
 					self.fillSquare(xpos, ypos-1, self.userTurn)
-			else:
-				print("ici2")
 		else:
 			if ypos < self.lineSize and xpos < self.columnSize:
 				if self.boardv[ypos][xpos] == True and self.boardv[ypos][xpos+1] == True and self.boardh[ypos][xpos] == True and self.boardh[ypos+1][xpos]:
@@ -297,8 +296,12 @@ class BoxesGame():
 			pygame.display.flip()
 
 if __name__ == "__main__":
+
+	sys.setrecursionlimit(15000)
+
 	# ia = "random"
-	ia = "reflex"
+	#ia = "reflex"
+	ia = "minmax"
 	bg=BoxesGame(ia) #__init__ is called right here
 	while 1:
 		if bg.update() == 1:
