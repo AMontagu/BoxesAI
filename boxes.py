@@ -30,8 +30,8 @@ class BoxesGame():
 		pygame.init()
 		pygame.font.init()
 
-		self.lineSize = 2
-		self.columnSize = 2
+		self.lineSize = 3
+		self.columnSize = 3
 
 		self.squareSize = 64
 		self.separatorSize = 5
@@ -51,8 +51,10 @@ class BoxesGame():
 		self.userTurn = True
 		self.user=0
 		self.ia=0
+		self.oldBoxFilled = self.user + self.ia
 		self.userWin=False
 		self.owner = [[0 for x in range(self.columnSize)] for y in range(self.lineSize)]
+
 
 		if ia == "random":
 			self.solver = RandomSolver(self.columnSize, self.lineSize)
@@ -261,10 +263,25 @@ class BoxesGame():
 					pygame.display.flip()
 					return 1
 
-				if self.userTurn:
+				print(self.oldBoxFilled)
+
+				if self.userTurn and self.oldBoxFilled == self.user + self.ia:
 					self.userTurn = False
 					self.iaPlay()
 					self.userTurn = True
+
+				self.oldBoxFilled = self.user + self.ia
+
+				if self.user + self.ia == self.lineSize * self.columnSize:
+					self.userWin = True if self.user > self.ia else False
+					# clear the screen
+					self.screen.fill(0)
+					# draw the board
+					self.drawBoard()
+					self.drawHUD()
+					self.drawOwnermap()
+					pygame.display.flip()
+					return 1
 
 		#update the screen
 		pygame.display.flip()
@@ -284,7 +301,9 @@ class BoxesGame():
 
 		self.checkCloseSquare(xpos, ypos, isHorizontal)
 
-		pass
+		while self.oldBoxFilled != self.user + self.ia and self.user + self.ia != self.columnSize * self.lineSize:
+			self.oldBoxFilled = self.user + self.ia
+			self.iaPlay()
 
 
 	def finished(self):
@@ -299,7 +318,7 @@ if __name__ == "__main__":
 
 	sys.setrecursionlimit(15000)
 
-	# ia = "random"
+	#ia = "random"
 	#ia = "reflex"
 	ia = "minmax"
 	bg=BoxesGame(ia) #__init__ is called right here
