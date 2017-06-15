@@ -25,20 +25,23 @@ from reflexSolver import ReflexSolver
 
 
 class BoxesGame():
-	def __init__(self, ia):
+	def __init__(self, columnNumber, lineNumber, ia):
 		pass
 		#1
 		pygame.init()
 		pygame.font.init()
 
-		self.lineSize = 4
-		self.columnSize = 4
+		self.lineSize = lineNumber
+		self.columnSize = columnNumber
 
 		self.squareSize = 64
 		self.separatorSize = 5
 
 		self.width = self.columnSize* self.squareSize + self.separatorSize
 		self.height = self.lineSize * self.squareSize + self.separatorSize + 100
+
+		if self.width < 389: self.width=389
+		if self.height < 500: self.height = 500
 		#2
 		#initialize the screen
 		self.screen = pygame.display.set_mode((self.width, self.height))
@@ -319,11 +322,17 @@ if __name__ == "__main__":
 
 	sys.setrecursionlimit(15000)
 
+	print(sys.argv)
+
+	columnNumber = int(sys.argv[1])
+	lineNumber = int(sys.argv[2])
+	ia = str(sys.argv[3])
+
 	#ia = "random"
 	#ia = "reflex"
 	#ia = "minmax"
-	ia = "learning"
-	bg=BoxesGame(ia) #__init__ is called right here
+	#ia = "learning"
+	bg=BoxesGame(columnNumber, lineNumber, ia) #__init__ is called right here
 	while 1:
 		if bg.update() == 1:
 			break

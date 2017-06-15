@@ -117,7 +117,7 @@ class MinMaxSolver(ReflexSolver):
 
 		try:
 			for available in availableHit:
-				if depth < 3:
+				if depth < 2:
 					result = self.calculate(available[1], available[0], True, available[2], copy.deepcopy(boardh), copy.deepcopy(boardv), depth+1)
 				else:
 					return currentValue
